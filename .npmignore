@@ -1,0 +1,10 @@
+/test
+.prettierrc.*
+.prettierignore
+.gitignore
+/.github
+/docs
+.VSCodeCounter/
+.env
+pnpm-*
+/dist
