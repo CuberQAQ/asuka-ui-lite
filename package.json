@@ -25,8 +25,12 @@
     }
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "jiti": "^2.6.1",
     "prettier": "3.2.5",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.49.0"
   },
   "scripts": {
     "watch": "tsc --watch",

@@ -6,7 +6,7 @@ export interface BaseWidget {
   setup(): void;
   render(view: HmWidgetFactory): void;
   clear(): void;
-  // cleanup?(): void;
+  cleanup(): void;
 }
 
 export interface NativeWidget extends BaseWidget {

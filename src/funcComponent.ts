@@ -1,9 +1,10 @@
+import { type ReactiveEffect } from '@x1a0ma17x/zeppos-reactive';
 import { BaseWidget, BaseWidgetClass } from './BaseWidget.js';
 import { HmWidgetFactory } from './common.js';
 
 const FuncComponentMap = new WeakMap<Function, BaseWidgetClass<BaseWidget>>();
 
-let activeFuncComp: BaseWidget | null = null;
+export var activeFuncComp: FuncComponent<BaseWidget, any> | null = null;
 
 export declare interface FuncComponent<
   T extends BaseWidget,
@@ -11,6 +12,7 @@ export declare interface FuncComponent<
 > extends BaseWidget {
   props: P;
   __child: T | null;
+  __effects: ReactiveEffect<unknown>[];
 }
 
 export function FuncComponent<
@@ -27,27 +29,20 @@ export function FuncComponent<
       [name]: class implements FuncComponent<T, P> {
         __isAsukaWidget: true = true;
         __child: T | null = null;
+        __effects: ReactiveEffect<unknown>[] = [];
         constructor(public props: P) {
-          if(name === 'MenuItem') {
-            console.log(`MenuItem constructor, onClick=${this.props.onClick}`);
-          }
         }
         setup(): void {
-          if(name === 'MenuItem') {
-            console.log(`MenuItem setup, onClick=${this.props.onClick}`);
-          }
-          // console.log(`${name}(FuncComponent) setup`);
           let prev = activeFuncComp;
           activeFuncComp = this;
           try {
             this.__child = Comp(this.props, this);
-            if(this.__child) this.__child.setup();
           } finally {
             activeFuncComp = prev;
           }
+          if (this.__child) this.__child.setup();
         }
         render(view: HmWidgetFactory): void {
-          // console.log(`${name}(FuncComponent) render`);
           if (!this.__child) {
             throw new Error(`Component not setup, name: ${Comp.name}`);
           }
@@ -55,6 +50,11 @@ export function FuncComponent<
         }
         clear(): void {
           this.__child!.clear();
+        }
+        cleanup(): void {
+          this.__child!.cleanup();
+          this.__effects.forEach((effect) => effect.stop());
+          this.__effects = [];
         }
       },
     };

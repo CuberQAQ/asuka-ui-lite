@@ -84,5 +84,6 @@ export function render<
   root.render(view);
   return () => {
     root.clear();
+    root.cleanup();
   };
 }

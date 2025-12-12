@@ -1,9 +1,19 @@
 import hmUI from '@zos/ui';
 import { BaseWidget, BaseWidgetClass, NativeWidget } from './BaseWidget.js';
 import { ExtendWidgetProps, HmWidgetFactory } from './common.js';
-import { effect } from '@x1a0ma17x/zeppos-reactive';
-import { FuncComponent } from './funcComponent.js';
-export { effect, memo, mergeProps } from '@x1a0ma17x/zeppos-reactive';
+import { effect as _effect, type ReactiveEffect } from '@x1a0ma17x/zeppos-reactive';
+import { activeFuncComp, FuncComponent } from './funcComponent.js';
+export * from '@x1a0ma17x/zeppos-reactive';
+
+const effect = <T>(fn: (prev: T | undefined) => T, initialValue?: T) => {
+  const eff = _effect(fn, initialValue);
+  if (activeFuncComp) {
+    activeFuncComp.__effects.push(eff as ReactiveEffect<unknown>);
+  }
+  return eff;
+};
+
+export { effect };
 
 export function createComponent<
   T extends BaseWidget,
@@ -26,7 +36,7 @@ export function createComponent<
   props: Partial<P>,
 ): ExtendWidgetProps<T, P> | ExtendWidgetProps<FuncComponent<K, P>, P> {
   if (typeof Comp !== 'function') {
-    throw new Error('Component must be a function or a class');
+    throw new Error('Component must be a function or a class, received:' + Comp);
   }
   if (!Comp?.prototype?.render) {
     return new (FuncComponent(Comp as (props: P, self: BaseWidget) => K))(
@@ -59,6 +69,7 @@ export function createWidget(
       }
       this.__active = false;
     },
+    cleanup() {},
   };
 }
 
