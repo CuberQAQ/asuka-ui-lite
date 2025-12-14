@@ -1,4 +1,4 @@
-import { type ReactiveEffect } from '@x1a0ma17x/zeppos-reactive';
+import { untrack, type ReactiveEffect } from '@x1a0ma17x/zeppos-reactive';
 import { BaseWidget, BaseWidgetClass } from './BaseWidget.js';
 import { HmWidgetFactory } from './common.js';
 
@@ -30,13 +30,12 @@ export function FuncComponent<
         __isAsukaWidget: true = true;
         __child: T | null = null;
         __effects: ReactiveEffect<unknown>[] = [];
-        constructor(public props: P) {
-        }
+        constructor(public props: P) {}
         setup(): void {
           let prev = activeFuncComp;
           activeFuncComp = this;
           try {
-            this.__child = Comp(this.props, this);
+            this.__child = untrack(() => Comp(this.props, this));
           } finally {
             activeFuncComp = prev;
           }
