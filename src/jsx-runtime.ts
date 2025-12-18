@@ -1,19 +1,23 @@
 import hmUI from '@zos/ui';
 import { BaseWidget, BaseWidgetClass, NativeWidget } from './BaseWidget.js';
 import { ExtendWidgetProps, HmWidgetFactory } from './common.js';
-import { effect as _effect, type ReactiveEffect } from '@x1a0ma17x/zeppos-reactive';
+import {
+  effect as _effect,
+  effect,
+  type ReactiveEffect,
+} from '@x1a0ma17x/zeppos-reactive';
 import { activeFuncComp, FuncComponent } from './funcComponent.js';
 export * from '@x1a0ma17x/zeppos-reactive';
 
-const effect = <T>(fn: (prev: T | undefined) => T, initialValue?: T) => {
-  const eff = _effect(fn, initialValue);
-  if (activeFuncComp) {
-    activeFuncComp.__effects.push(eff as ReactiveEffect<unknown>);
-  }
-  return eff;
-};
+// const effect = <T>(fn: (prev: T | undefined) => T, initialValue?: T) => {
+//   const eff = _effect(fn, initialValue);
+//   if (activeFuncComp) {
+//     activeFuncComp.__effects.push(eff as ReactiveEffect<unknown>);
+//   }
+//   return eff;
+// };
 
-export { effect };
+// export { effect };
 
 export function createComponent<
   T extends BaseWidget,
@@ -36,7 +40,9 @@ export function createComponent<
   props: Partial<P>,
 ): ExtendWidgetProps<T, P> | ExtendWidgetProps<FuncComponent<K, P>, P> {
   if (typeof Comp !== 'function') {
-    throw new Error('Component must be a function or a class, received:' + Comp);
+    throw new Error(
+      'Component must be a function or a class, received:' + Comp,
+    );
   }
   if (!Comp?.prototype?.render) {
     return new (FuncComponent(Comp as (props: P, self: BaseWidget) => K))(
@@ -45,6 +51,8 @@ export function createComponent<
   } else
     return new (Comp as BaseWidgetClass<T>)(props) as ExtendWidgetProps<T, P>;
 }
+
+var activeWidgetCnt = 0;
 
 export function createWidget(
   type: (typeof hmUI.prop)[keyof typeof hmUI.prop],
@@ -56,20 +64,49 @@ export function createWidget(
     __active: false,
     __widget: null,
     props,
-    setup() {},
+    setup() {
+      console.log(`${++activeWidgetCnt} widget created`);
+    },
     render(view: HmWidgetFactory) {
       if (this.__widget) this.clear();
       this.__widget = view.createWidget(type, props);
       this.__active = true;
     },
     clear() {
+      // 🛑 1. 强制清理 Native 层的回调函数引用
       if (this.__widget) {
+        const cleanProps: Record<string, any> = {};
+        // 遍历当前持有的 props，只找出函数进行清理
+        for (const key in this.props) {
+          const val = this.props[key];
+          // 检查函数类型和事件命名约定
+          if (typeof val === 'function' || key.endsWith('func')) {
+            cleanProps[key] = null;
+          }
+        }
+
+        // 强制 Native Widget 释放这些函数闭包的引用
+        if (Object.keys(cleanProps).length > 0) {
+          try {
+            this.__widget.setProperty(hmUI.prop.MORE, cleanProps as any);
+          } catch (e) {
+            // 忽略，防止中断
+          }
+        }
+
+        // 🛑 2. 删除 Widget
         hmUI.deleteWidget(this.__widget);
         this.__widget = null;
       }
       this.__active = false;
     },
-    cleanup() {},
+    cleanup() {
+      console.log(`${activeWidgetCnt--} widget cleanup`);
+      for (const key in this.props) {
+        this.props[key] = null;
+      }
+      this.props = {};
+    },
   };
 }
 
@@ -84,16 +121,35 @@ export function createElement(type: string) {
 export function setProp(widget: NativeWidget, prop: string, value: any) {
   widget.props[prop] = value;
   if (widget.__active) {
-    widget.__widget?.setProperty(hmUI.prop.MORE, widget.props as any); // TODO 不一定适用于所有的组件
+    if (typeof value === 'function' || prop.endsWith('func')) {
+      if (widget.__widget) (widget.__widget as any)[prop] = value;
+    } else {
+      const safeProps: Record<string, any> = {};
+      for (const key in widget.props) {
+        if (typeof widget.props[key] !== 'function' && !key.endsWith('func')) {
+          safeProps[key] = widget.props[key];
+        }
+      }
+      widget.__widget?.setProperty(hmUI.prop.MORE, safeProps as any);
+    }
   }
 }
 
 function setProperties(widget: NativeWidget, props: Record<string, any>) {
   Object.assign(widget.props, props);
-  if (widget.__active) {
-    widget.__widget?.setProperty(hmUI.prop.MORE, widget.props as any); // TODO 不一定适用于所有的组件
+  const safeProps: Record<string, any> = {};
+  for (const key in widget.props) {
+    if (typeof widget.props[key] === 'function' || key.endsWith('func')) {
+      if (widget.__widget) (widget.__widget as any)[key] = widget.props[key];
+    } else {
+      safeProps[key] = widget.props[key];
+    }
   }
+
+  widget.__widget?.setProperty(hmUI.prop.MORE, safeProps as any);
 }
+
+
 
 // solid-js compatible
 export function spread<T extends Record<string, any>>(
