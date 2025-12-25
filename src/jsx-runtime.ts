@@ -7,6 +7,7 @@ import {
   type ReactiveEffect,
 } from '@x1a0ma17x/zeppos-reactive';
 import { activeFuncComp, FuncComponent } from './funcComponent.js';
+import { px } from '@zos/utils';
 export * from '@x1a0ma17x/zeppos-reactive';
 
 // const effect = <T>(fn: (prev: T | undefined) => T, initialValue?: T) => {
@@ -54,6 +55,9 @@ export function createComponent<
 
 var activeWidgetCnt = 0;
 
+
+
+
 export function createWidget(
   type: (typeof hmUI.prop)[keyof typeof hmUI.prop],
   props: Record<string, any>,
@@ -73,28 +77,7 @@ export function createWidget(
       this.__active = true;
     },
     clear() {
-      // 🛑 1. 强制清理 Native 层的回调函数引用
       if (this.__widget) {
-        const cleanProps: Record<string, any> = {};
-        // 遍历当前持有的 props，只找出函数进行清理
-        for (const key in this.props) {
-          const val = this.props[key];
-          // 检查函数类型和事件命名约定
-          if (typeof val === 'function' || key.endsWith('func')) {
-            cleanProps[key] = null;
-          }
-        }
-
-        // 强制 Native Widget 释放这些函数闭包的引用
-        if (Object.keys(cleanProps).length > 0) {
-          try {
-            this.__widget.setProperty(hmUI.prop.MORE, cleanProps as any);
-          } catch (e) {
-            // 忽略，防止中断
-          }
-        }
-
-        // 🛑 2. 删除 Widget
         hmUI.deleteWidget(this.__widget);
         this.__widget = null;
       }
@@ -102,9 +85,6 @@ export function createWidget(
     },
     cleanup() {
       console.log(`${activeWidgetCnt--} widget cleanup`);
-      for (const key in this.props) {
-        this.props[key] = null;
-      }
       this.props = {};
     },
   };
@@ -118,7 +98,27 @@ export function createElement(type: string) {
   return createWidget(hmUI.widget[_type as keyof typeof hmUI.widget], {});
 }
 
+const PxMapProps = {
+  'x': 'x',
+  'y': 'y',
+  'w': 'w',
+  'h': 'h',
+  'text_size': 'text_size',
+  'radius': 'radius',
+  'center_x': 'center_x',
+  'center_y': 'center_y',
+  'line_width': 'line_width',
+  'line_progress_end_x': 'line_progress_end_x',
+  'line_progress_end_y': 'line_progress_end_y',
+  'line_progress_start_x': 'line_progress_start_x',
+  'line_progress_start_y': 'line_progress_start_y',
+  'line_progress_width': 'line_progress_width',
+  'pos_x': 'pos_x',
+  'pos_y': 'pos_y',
+}
+
 export function setProp(widget: NativeWidget, prop: string, value: any) {
+  if(prop in PxMapProps && typeof value === 'string') value = px(parseInt(value));
   widget.props[prop] = value;
   if (widget.__active) {
     if (typeof value === 'function' || prop.endsWith('func')) {
@@ -136,20 +136,18 @@ export function setProp(widget: NativeWidget, prop: string, value: any) {
 }
 
 function setProperties(widget: NativeWidget, props: Record<string, any>) {
-  Object.assign(widget.props, props);
   const safeProps: Record<string, any> = {};
-  for (const key in widget.props) {
-    if (typeof widget.props[key] === 'function' || key.endsWith('func')) {
-      if (widget.__widget) (widget.__widget as any)[key] = widget.props[key];
+  for (const key in props) {
+    if (typeof props[key] === 'function' || key.endsWith('func')) {
+      if (widget.__widget) (widget.__widget as any)[key] = props[key];
     } else {
-      safeProps[key] = widget.props[key];
+      if(key in PxMapProps && typeof props[key] === 'string') props[key] = px(parseInt(props[key]));
+      safeProps[key] = props[key];
     }
   }
-
+  Object.assign(widget.props, props);
   widget.__widget?.setProperty(hmUI.prop.MORE, safeProps as any);
 }
-
-
 
 // solid-js compatible
 export function spread<T extends Record<string, any>>(

@@ -1,6 +1,7 @@
 import hmUI from '@zos/ui';
 import { BaseWidget, BaseWidgetClass } from './BaseWidget.js';
 import { createComponent } from './jsx-runtime.js';
+import { px } from '@zos/utils';
 
 export interface HmWidgetFactory extends Partial<HmWidget> {
   createWidget: (
@@ -86,4 +87,10 @@ export function render<
     root.clear();
     root.cleanup();
   };
+}
+
+
+export type Scale = number | `${number}px`;
+export function scale(v: number | `${number}px`): number {
+  return typeof v === 'string' ? px(parseInt(v)) as unknown as number : v;
 }
