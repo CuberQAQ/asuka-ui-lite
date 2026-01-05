@@ -41,7 +41,7 @@ export function FuncComponent<
         constructor(public props: P) {}
         setup(): void {
 
-          console.log(`${++activeFuncCnt} FuncComponent setup: ${name}`);
+          // console.log(`${++activeFuncCnt} FuncComponent setup: ${name}`);
 
           scoped(() => {
             let prev = activeFuncComp;
@@ -55,17 +55,14 @@ export function FuncComponent<
           }, this.__effects);
         }
         render(view: HmWidgetFactory): void {
-          if (!this.__child) {
-            throw new Error(`Component not setup, name: ${Comp.name}`);
-          }
-          this.__child.render(view);
+          this.__child?.render(view);
         }
         clear(): void {
-          this.__child!.clear();
+          this.__child?.clear();
         }
         cleanup(): void {
-          console.log(`${activeFuncCnt++} FuncComponent cleanup: ${name}`);
-          this.__child!.cleanup();
+          // console.log(`${activeFuncCnt++} FuncComponent cleanup: ${name}`);
+          this.__child?.cleanup();
           this.__child = null;
           this.__effects.forEach((effect) => effect.stop());
           this.__effects = [];

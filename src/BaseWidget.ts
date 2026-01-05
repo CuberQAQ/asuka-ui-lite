@@ -2,7 +2,7 @@ import { HmWidget, HmWidgetFactory } from './common.js';
 
 export interface BaseWidget {
   __isAsukaWidget: true;
-  props: Record<string, any>;
+  props: any;
   setup(): void;
   render(view: HmWidgetFactory): void;
   clear(): void;

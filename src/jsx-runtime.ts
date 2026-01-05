@@ -53,7 +53,7 @@ export function createComponent<
     return new (Comp as BaseWidgetClass<T>)(props) as ExtendWidgetProps<T, P>;
 }
 
-var activeWidgetCnt = 0;
+// var activeWidgetCnt = 0;
 
 
 
@@ -69,7 +69,7 @@ export function createWidget(
     __widget: null,
     props,
     setup() {
-      console.log(`${++activeWidgetCnt} widget created`);
+      // console.log(`${++activeWidgetCnt} widget created`);
     },
     render(view: HmWidgetFactory) {
       if (this.__widget) this.clear();
@@ -84,7 +84,7 @@ export function createWidget(
       this.__active = false;
     },
     cleanup() {
-      console.log(`${activeWidgetCnt--} widget cleanup`);
+      // console.log(`${activeWidgetCnt--} widget cleanup`);
       this.props = {};
     },
   };
