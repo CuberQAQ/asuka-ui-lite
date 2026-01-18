@@ -20,6 +20,7 @@ export declare interface FuncComponent<
   __child: T | null;
   __effects: ReactiveEffect<unknown>[];
   __disposes: (() => void)[];
+  __afterRenders: (() => void)[];
 }
 
 export function FuncComponent<
@@ -38,6 +39,7 @@ export function FuncComponent<
         __child: T | null = null;
         __effects: ReactiveEffect<unknown>[] = [];
         __disposes: (() => void)[] = [];
+        __afterRenders: (() => void)[] = [];
         constructor(public props: P) {}
         setup(): void {
 
@@ -56,6 +58,7 @@ export function FuncComponent<
         }
         render(view: HmWidgetFactory): void {
           this.__child?.render(view);
+          this.__afterRenders.forEach((afterRender) => afterRender());
         }
         clear(): void {
           this.__child?.clear();
@@ -66,6 +69,7 @@ export function FuncComponent<
           this.__child = null;
           this.__effects.forEach((effect) => effect.stop());
           this.__effects = [];
+          this.__afterRenders = [];
           this.__disposes.forEach((dispose) => dispose());
           this.__disposes = [];
         }
@@ -94,4 +98,14 @@ export function onCleanup(fn: () => void) {
     return;
   }
   activeFuncComp.__disposes.push(fn);
+}
+
+export function afterRender(fn: () => void) {
+  if (activeFuncComp === null) {
+    console.log(
+      `afterRender should be called in func component setup() synchronously`,
+    );
+    return;
+  }
+  activeFuncComp.__afterRenders.push(fn);
 }
