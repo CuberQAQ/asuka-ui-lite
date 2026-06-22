@@ -2,7 +2,7 @@ import {
   scoped,
   untrack,
   type ReactiveEffect,
-} from '@x1a0ma17x/zeppos-reactive';
+} from '@cuberqaq/zeppos-reactive';
 import { BaseWidget, BaseWidgetClass } from './BaseWidget.js';
 import { HmWidgetFactory } from './common.js';
 

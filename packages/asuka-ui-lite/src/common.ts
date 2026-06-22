@@ -89,13 +89,3 @@ export function render<
   };
 }
 
-let pxFunc = px;
-export const setPxFunc = (func: (v: number) => number) => {
-  pxFunc = func;
-};
-
-
-export type Scale = number | `${number}px`;
-export function scale(v: number | `${number}px`): number {
-  return typeof v === 'string' ? pxFunc(parseInt(v)) as unknown as number : v;
-}

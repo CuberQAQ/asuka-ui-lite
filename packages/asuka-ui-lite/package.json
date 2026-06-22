@@ -1,0 +1,58 @@
+{
+  "name": "@cuberqaq/asuka-ui-lite",
+  "version": "1.0.1",
+  "description": "UI Framework for Zepp OS",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CuberQAQ/asuka-ui-lite"
+  },
+  "author": "CuberQAQ",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "readme.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/jsx-runtime.d.ts",
+      "import": "./dist/jsx-runtime.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "@cuberqaq/zeppos-reactive": "workspace:*"
+  },
+  "peerDependencies": {
+    "@zeppos/device-types": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@zeppos/device-types": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@zeppos/device-types": "^3.0.0",
+    "prettier": "3.2.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.49.0"
+  },
+  "keywords": [
+    "zepp",
+    "zeppos",
+    "ui",
+    "jsx",
+    "framework",
+    "watch"
+  ],
+  "zeppos": true
+}

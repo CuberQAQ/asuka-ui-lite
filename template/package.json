@@ -1,0 +1,23 @@
+{
+  "name": "asuka-ui-lite-template",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Starter template for Zepp OS apps using @cuberqaq/asuka-ui-lite",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --mode development",
+    "dev:watch": "vite build --mode development --watch",
+    "build": "vite build --mode production",
+    "build:watch": "vite build --mode production --watch"
+  },
+  "dependencies": {
+    "@cuberqaq/asuka-ui-lite": "workspace:*",
+    "@cuberqaq/path-polyfill": "^1.0.2",
+    "@zeppos/device-types": "^3.0.0",
+    "@zeppos/zml": "^0.0.23"
+  },
+  "devDependencies": {
+    "vite": "^7.2.7",
+    "vite-plugin-solid": "^2.11.10"
+  }
+}

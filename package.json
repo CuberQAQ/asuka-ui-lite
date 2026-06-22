@@ -1,41 +1,24 @@
 {
-  "name": "@cuberqaq/asuka-ui-lite",
-  "version": "1.0.1",
-  "description": "UI Framework for Zepp OS",
-  "repository": "https://github.com/CuberQAQ/asuka-ui",
-  "author": "CuberQAQ",
-  "license": "MIT",
-  "main": "./dist/index.js",
+  "name": "asuka-ui-lite-monorepo",
+  "private": true,
+  "description": "Asuka UI Lite monorepo: reactive core + JSX UI framework + template",
   "type": "module",
-  "types": "./src/index.ts",
-  "files": [
-    "./dist",
-    "./src",
-    "./readme.md",
-    "./package.json"
-  ],
-  "exports": {
-    ".": {
-      "default": "./dist/index.js",
-      "types": "./src/index.ts"
-    },
-    "./jsx-runtime": {
-      "default": "./dist/jsx-runtime.js",
-      "types": "./src/jsx-runtime.ts"
-    }
+  "scripts": {
+    "build": "pnpm -r build",
+    "watch": "pnpm -r --parallel watch",
+    "clean": "pnpm -r exec rm -rf dist",
+    "typecheck": "pnpm -r exec tsc --noEmit",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "pnpm -r build && changeset publish"
   },
   "devDependencies": {
-    "prettier": "3.2.5",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.49.0"
+    "@changesets/changelog-github": "^0.5.0",
+    "@changesets/cli": "^2.27.0",
+    "typescript": "^5.9.3"
   },
-  "scripts": {
-    "watch": "tsc --watch",
-    "build": "tsc"
-  },
-  "dependencies": {
-    "@x1a0ma17x/zeppos-reactive": "^1.0.1",
-    "@zeppos/device-types": "^3.0.0"
-  },
-  "zeppos": true
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=9"
+  }
 }

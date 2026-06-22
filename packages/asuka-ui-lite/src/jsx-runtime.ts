@@ -5,10 +5,11 @@ import {
   effect as _effect,
   effect,
   type ReactiveEffect,
-} from '@x1a0ma17x/zeppos-reactive';
+} from '@cuberqaq/zeppos-reactive';
 import { activeFuncComp, FuncComponent } from './funcComponent.js';
 import { px } from '@zos/utils';
-export * from '@x1a0ma17x/zeppos-reactive';
+import { scale } from './scale.js';
+export * from '@cuberqaq/zeppos-reactive';
 
 // const effect = <T>(fn: (prev: T | undefined) => T, initialValue?: T) => {
 //   const eff = _effect(fn, initialValue);
@@ -98,6 +99,10 @@ export function createElement(type: string) {
   return createWidget(hmUI.widget[_type as keyof typeof hmUI.widget], {});
 }
 
+
+
+
+
 const PxMapProps = {
   'x': 'x',
   'y': 'y',
@@ -118,7 +123,7 @@ const PxMapProps = {
 }
 
 export function setProp(widget: NativeWidget, prop: string, value: any) {
-  if(prop in PxMapProps && typeof value === 'string') value = px(parseInt(value));
+  if(prop in PxMapProps) value = scale(value);
   widget.props[prop] = value;
   if (widget.__active) {
     if (typeof value === 'function' || prop.endsWith('func')) {

@@ -1,0 +1,15 @@
+# build output
+dist/
+page/*.page.js
+page/*/*.js
+shared/
+app.js
+*.zab
+
+# deps
+node_modules/
+
+# env / editor
+.env
+.DS_Store
+*.log

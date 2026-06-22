@@ -1,0 +1,44 @@
+{
+  "configVersion": "v3",
+  "app": {
+    "appId": 0,
+    "appName": "Asuka UI Lite Template",
+    "appType": "app",
+    "version": {
+      "code": 1,
+      "name": "0.1.0"
+    },
+    "icon": "assets/icon.png",
+    "vender": "your-name",
+    "description": "Starter template for Zepp OS apps using @cuberqaq/asuka-ui-lite"
+  },
+  "permissions": [],
+  "runtime": {
+    "apiVersion": {
+      "compatible": "3.0.0",
+      "target": "3.0.0",
+      "minVersion": "3.0"
+    }
+  },
+  "debug": true,
+  "targets": {
+    "common": {
+      "module": {
+        "page": {
+          "pages": ["page/index.page"]
+        },
+        "app-side": {
+          "path": "app-side/index"
+        }
+      },
+      "platforms": [{ "st": "r" }, { "st": "s" }],
+      "designWidth": 480
+    }
+  },
+  "i18n": {
+    "en-US": {
+      "appName": "Asuka UI Lite Template"
+    }
+  },
+  "defaultLanguage": "en-US"
+}
