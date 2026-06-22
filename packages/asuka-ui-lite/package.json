@@ -1,6 +1,6 @@
 {
   "name": "@cuberqaq/asuka-ui-lite",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "UI Framework for Zepp OS",
   "repository": {
     "type": "git",
@@ -54,5 +54,9 @@
     "framework",
     "watch"
   ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "zeppos": true
 }
